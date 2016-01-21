@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace DanmakuSong
 {
@@ -9,7 +10,7 @@ namespace DanmakuSong
     {
         public songInfo()
         {
-            this.songName = "NaN";
+            this.songName = null;
             this.songID = null;
             this.lastSecond = 0;
             this.songURL = null;
@@ -32,7 +33,15 @@ namespace DanmakuSong
                 return;
             }
 
-            
+            #region
+
+            JObject jo = JObject.Parse(json);
+            string mp3Url = jo["songs"]["mp3Url"].ToString();
+            string song_Name = jo["songs"]["name"].ToString();
+            int duration = System.Convert.ToInt32(jo["songs"]["duration"]);
+
+            #endregion//使用Json处理
+
             #region
             /*
             //songInfo s = (songInfo)JsonConvert.DeserializeObject(json, typeof(songInfo));
@@ -52,7 +61,7 @@ namespace DanmakuSong
             this.songName = song_Name;
             this.by = commentUser;
             //持续时间暂时不用
-            this.lastSecond = 32767;
+            this.lastSecond = duration;
 
             //Debug
             /*
@@ -107,18 +116,35 @@ namespace DanmakuSong
                 return;
             }
 
+            #region
+
+            JObject jo = JObject.Parse(json);
+            string mp3Url = jo["songs"]["mp3Url"].ToString();
+            string song_Name = jo["songs"]["name"].ToString();
+            int duration = System.Convert.ToInt32(jo["songs"]["duration"]);
+
+            #endregion//使用Json处理
+
+            #region
+            /*
+            //songInfo s = (songInfo)JsonConvert.DeserializeObject(json, typeof(songInfo));
+
             string tmpUrl = json.Substring(json.IndexOf("\"mp3Url\":\"") + 10);
             string mp3Url = tmpUrl.Substring(0, tmpUrl.IndexOf("\""));
 
             string tmpName = json.Substring(json.IndexOf("\"name\":\"") + 8);
             string song_Name = tmpName.Substring(0, tmpName.IndexOf("\""));
 
+            //暂时用字符串处理代替json
+            */
+            #endregion //之前的字符串处理
+
             this.songID = id;
             this.songURL = mp3Url;
             this.songName = song_Name;
             this.by = commentUser;
             //持续时间暂时不用
-            this.lastSecond = 32767;
+            this.lastSecond = duration;
         }
     }
 
