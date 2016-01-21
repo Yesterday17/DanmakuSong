@@ -47,7 +47,6 @@ namespace DanmakuSong
                 //原有歌曲数量
                 int oldnum = l_frmSongList.getSongNum();
 
-                //已知Bug：会重复加载两次第一首歌并且舍去最后一首，不知为何。因此作出修正，将第一首歌多余的删除，最后一首补上。
                 if (e.Danmaku.isAdmin == true)
                 {
                     string id = d_txt.Substring(3);
@@ -60,6 +59,21 @@ namespace DanmakuSong
                     sr.Close();
                     sc.Close();
 
+                    Newtonsoft.Json.Linq.JObject jo = Newtonsoft.Json.Linq.JObject.Parse(json);
+                    int i = 0;
+
+                    while (i < jo["result"]["tracks"].Count())
+                    {
+                        string name = jo["result"]["tracks"][i]["name"].ToString();
+                        string m_url = jo["result"]["tracks"][i]["mp3Url"].ToString();
+                        long last = Convert.ToInt32(jo["result"]["tracks"][i]["duration"]);
+                        songInfo newsong = new songInfo(id, name, last, m_url, d_by);
+
+                        l_frmSongList.addSong(newsong);
+
+                        i++;
+                    }
+                    #region
                     json = json.Substring(json.IndexOf("popularity") + 10);
 
                     while (json.IndexOf("mp3Url") != -1 && json.IndexOf("popularity") != -1)
@@ -81,6 +95,7 @@ namespace DanmakuSong
                     l_frmSongList.addSong(new songInfo(id, json, d_by));
 
                     //l_frmSongList.delSong(oldnum+1);
+                    #endregion
                 }
                 else
                 {

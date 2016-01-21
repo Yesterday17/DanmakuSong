@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Net.WebSockets;
 
 namespace DanmakuSong
 {
@@ -145,6 +146,48 @@ namespace DanmakuSong
             this.by = commentUser;
             //持续时间暂时不用
             this.lastSecond = duration;
+        }
+
+        public bool songListError(string json)
+        {
+            err = false;
+            if (json == "{\"message\":\"no resource\",\"code\":404}")
+            {
+                err = true;
+            }
+
+            return err;
+        }
+
+        public songInfo(string id, string name, long last, string Url, string by)
+        {
+            this.songID = id;
+            this.songName = name;
+            this.lastSecond = last;
+            this.songURL = Url;
+            this.by = by;
+            this.err = false;
+        }
+
+        public void HttpDownloadFile(string path)
+        {
+            // 设置参数
+            HttpWebRequest request = WebRequest.Create(this.songURL) as HttpWebRequest;
+            //发送请求并获取相应回应数据
+            HttpWebResponse response = request.GetResponse() as HttpWebResponse;
+            //直到request.GetResponse()程序才开始向目标网页发送Post请求
+            Stream responseStream = response.GetResponseStream();
+            //创建本地文件写入流
+            Stream stream = new FileStream(path, FileMode.Create);
+            byte[] bArr = new byte[1024];
+            int size = responseStream.Read(bArr, 0, (int)bArr.Length);
+            while (size > 0)
+            {
+                stream.Write(bArr, 0, size);
+                size = responseStream.Read(bArr, 0, (int)bArr.Length);
+            }
+            stream.Close();
+            responseStream.Close();
         }
     }
 
