@@ -11,7 +11,7 @@ namespace DanmakuSong
         {
             this.songName = "NaN";
             this.songID = null;
-            this.lastSecond= 0;
+            this.lastSecond = 0;
             this.songURL = null;
             this.by = null;
         }
@@ -26,11 +26,15 @@ namespace DanmakuSong
             sr.Close();
             sc.Close();
 
-            if(json== "{\"songs\":[],\"equalizers\":{},\"code\":200}"){
+            if (json == "{\"songs\":[],\"equalizers\":{},\"code\":200}")
+            {
                 err = true;
                 return;
             }
 
+            
+            #region
+            /*
             //songInfo s = (songInfo)JsonConvert.DeserializeObject(json, typeof(songInfo));
 
             string tmpUrl = json.Substring(json.IndexOf("\"mp3Url\":\"") + 10);
@@ -40,6 +44,8 @@ namespace DanmakuSong
             string song_Name = tmpName.Substring(0, tmpName.IndexOf("\""));
 
             //暂时用字符串处理代替json
+            */
+            #endregion //之前的字符串处理
 
             this.songID = id;
             this.songURL = mp3Url;
