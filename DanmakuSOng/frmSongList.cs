@@ -55,6 +55,7 @@ namespace DanmakuSong
             {
                 listView1.Items[0].Text = "√";
                 p.Play(i);
+                playlist.Dequeue();
             }
         }
 
@@ -70,16 +71,16 @@ namespace DanmakuSong
         {
             if (p.isStop())
             {
-                if (playlist.Count <= 1)
+                if (playlist.Count == listView1.Items.Count && playlist.Count == 0)
                 {
                     return;
                 }
-
                 listView1.Items.RemoveAt(0);
                 listView1.Items[0].Text = "√";
                 //删除list中第一首歌曲 给第二首打上勾
                 songInfo s = playlist.Dequeue() as songInfo;
                 p.Play(s);
+
             }
         }
 
@@ -109,7 +110,7 @@ namespace DanmakuSong
             }
             e.Cancel = true;
         }
-        
+
         public int getSongNum()
         {
             return listView1.Items.Count;

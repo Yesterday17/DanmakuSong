@@ -74,6 +74,8 @@ namespace DanmakuSong
                         i++;
                     }
                     #region
+
+                    /*
                     json = json.Substring(json.IndexOf("popularity") + 10);
 
                     while (json.IndexOf("mp3Url") != -1 && json.IndexOf("popularity") != -1)
@@ -95,6 +97,7 @@ namespace DanmakuSong
                     l_frmSongList.addSong(new songInfo(id, json, d_by));
 
                     //l_frmSongList.delSong(oldnum+1);
+                    */
                     #endregion
                 }
                 else
@@ -108,24 +111,52 @@ namespace DanmakuSong
         //管理插件
         public override void Admin()
         {
-            string s = Input.InputBox.ShowInputBox("请输入需要发送的弹幕！", string.Empty);
-            if (s.Substring(0, 2) == "点歌")
+            string d_txt = Input.InputBox.ShowInputBox("请输入需要发送的弹幕！", string.Empty);
+            string d_by = "DS";
+
+            if (d_txt.Substring(0, 2) == "点歌")
             {
-                string id = s.Substring(3);
-                songInfo newsong = new songInfo(id, "某昨");
+                d_by = d_by + " - 单曲";
+                string id = d_txt.Substring(3);
+                songInfo newsong = new songInfo(id, d_by);
                 if (!newsong.err)
                 {
                     l_frmSongList.addSong(newsong);
-                    AddDM(s);
                 }
                 else
                 {
-                    AddDM("某昨" + "输入的歌曲id：" + id + "有误！");
+                    AddDM(d_by + "输入的歌曲id：" + id + "有误！");
+                }
+            }
+            if (d_txt.Substring(0, 2) == "歌单")
+            {
+                d_by = d_by + " - 歌单";
+
+                string id = d_txt.Substring(3);
+                string url = "http://music.163.com/api/playlist/detail?id=" + id;
+                WebClient w = new WebClient();
+                Stream sc = w.OpenRead(url);
+                StreamReader sr = new StreamReader(sc, Encoding.UTF8);
+                string json = sr.ReadToEnd();
+                sr.Close();
+                sc.Close();
+
+                Newtonsoft.Json.Linq.JObject jo = Newtonsoft.Json.Linq.JObject.Parse(json);
+                int i = 0;
+
+                while (i < jo["result"]["tracks"].Count())
+                {
+                    string name = jo["result"]["tracks"][i]["name"].ToString();
+                    string m_url = jo["result"]["tracks"][i]["mp3Url"].ToString();
+                    long last = Convert.ToInt32(jo["result"]["tracks"][i]["duration"]);
+                    songInfo newsong = new songInfo(id, name, last, m_url, d_by);
+                    l_frmSongList.addSong(newsong);
+                    i++;
                 }
             }
             else
             {
-                AddDM(s);
+                AddDM(d_txt);
             }
             base.Admin();
         }
